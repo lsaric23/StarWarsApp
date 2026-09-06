@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/creaturesFragment">
+
+    <!-- Fragment popisa bića -->
+    <fragment
+        android:id="@+id/creaturesFragment"
+        android:name="org.unizd.rma.prezime.ui.CreaturesFragment"
+        android:label="Star Wars Bića"
+        tools:layout="@layout/fragment_creatures">
+
+        <action
+            android:id="@+id/action_creaturesFragment_to_creatureDetailFragment"
+            app:destination="@id/creatureDetailFragment" />
+    </fragment>
+
+    <!-- Fragment detalja bića -->
+    <fragment
+        android:id="@+id/creatureDetailFragment"
+        android:name="org.unizd.rma.prezime.ui.CreatureDetailFragment"
+        android:label="Detalji bića"
+        tools:layout="@layout/fragment_creature_detail">
+
+        <!-- Argument koji se prenosi s popisa na detalje -->
+        <argument
+            android:name="creature"
+            app:argType="org.unizd.rma.prezime.model.Creature" />
+    </fragment>
+
+</navigation>
