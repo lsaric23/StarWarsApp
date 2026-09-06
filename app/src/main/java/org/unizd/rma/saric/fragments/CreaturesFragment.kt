@@ -1,10 +1,10 @@
 package org.unizd.rma.saric.fragments
 
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -12,15 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import org.unizd.rma.saric.adapters.CreatureAdapter
 import org.unizd.rma.saric.databinding.FragmentCreaturesBinding
-import org.unizd.rma.saric.model.Creature
 import org.unizd.rma.saric.network.ApiClient
+import org.unizd.rma.saric.utils.PreferencesManager
 
 class CreaturesFragment : Fragment() {
 
     private var _binding: FragmentCreaturesBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var creatureAdapter: CreatureAdapter
+    private lateinit var adapter: CreatureAdapter
+    private lateinit var preferencesManager: PreferencesManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,67 +33,46 @@ class CreaturesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        preferencesManager = PreferencesManager(requireContext())
 
         setupRecyclerView()
         fetchCreatures()
     }
 
     private fun setupRecyclerView() {
-        creatureAdapter = CreatureAdapter { selectedCreature ->
-            navigateToCreatureDetail(selectedCreature)
+        adapter = CreatureAdapter { creature ->
+            creature._id?.let { preferencesManager.saveLastSelectedCreatureId(it) }
+            val action = CreaturesFragmentDirections
+                .actionCreaturesFragmentToCreatureDetailFragment(creature)
+            findNavController().navigate(action)
         }
-        binding.rvCreatures.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = creatureAdapter
-        }
+
+        binding.rvCreatures.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvCreatures.adapter = adapter
     }
 
     private fun fetchCreatures() {
-        showLoading()
+        binding.progressBar.visibility = View.VISIBLE
+        binding.tvError.visibility = View.GONE
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        lifecycleScope.launch {
             try {
                 val response = ApiClient.starWarsApi.getCreatures()
+                binding.progressBar.visibility = View.GONE
 
                 if (response.isSuccessful && response.body() != null) {
-                    val creaturesList = response.body()!!
-                    displayCreatures(creaturesList)
+                    val list = response.body()!!
+                    adapter.updateData(list)
                 } else {
-                    showError("Greška: ${response.code()} - ${response.message()}")
+                    binding.tvError.text = "Greška pri dohvatu podataka."
+                    binding.tvError.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
-                showError("Greška pri dohvaćanju podataka: ${e.message}")
+                binding.progressBar.visibility = View.GONE
+                binding.tvError.text = "Mrežna greška: ${e.localizedMessage}"
+                binding.tvError.visibility = View.VISIBLE
             }
         }
-    }
-
-    private fun displayCreatures(creatures: List<Creature>) {
-        binding.progressBar.visibility = View.GONE
-        binding.rvCreatures.visibility = View.VISIBLE
-        binding.tvError.visibility = View.GONE
-
-        creatureAdapter.updateData(creatures)
-    }
-
-    private fun showLoading() {
-        binding.progressBar.visibility = View.VISIBLE
-        binding.rvCreatures.visibility = View.GONE
-        binding.tvError.visibility = View.GONE
-    }
-
-    private fun showError(message: String) {
-        binding.progressBar.visibility = View.GONE
-        binding.rvCreatures.visibility = View.GONE
-        binding.tvError.visibility = View.VISIBLE
-        binding.tvError.text = message
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun navigateToCreatureDetail(creature: Creature) {
-        // Navigacija na detaljni pregled (možete proslijediti cijeli objekt ili id/ime)
-        val action = CreaturesFragmentDirections
-            .actionCreaturesFragmentToCreatureDetailFragment(creature)
-        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {

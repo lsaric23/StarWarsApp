@@ -5,10 +5,9 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/creaturesFragment">
 
-    <!-- Fragment popisa bića -->
     <fragment
         android:id="@+id/creaturesFragment"
-        android:name="org.unizd.rma.prezime.ui.CreaturesFragment"
+        android:name="org.unizd.rma.saric.fragments.CreaturesFragment"
         android:label="Star Wars Bića"
         tools:layout="@layout/fragment_creatures">
 
@@ -17,17 +16,15 @@
             app:destination="@id/creatureDetailFragment" />
     </fragment>
 
-    <!-- Fragment detalja bića -->
     <fragment
         android:id="@+id/creatureDetailFragment"
-        android:name="org.unizd.rma.prezime.ui.CreatureDetailFragment"
+        android:name="org.unizd.rma.saric.fragments.CreatureDetailFragment"
         android:label="Detalji bića"
         tools:layout="@layout/fragment_creature_detail">
 
-        <!-- Argument koji se prenosi s popisa na detalje -->
         <argument
             android:name="creature"
-            app:argType="org.unizd.rma.prezime.model.Creature" />
+            app:argType="org.unizd.rma.saric.model.Creature" />
     </fragment>
 
 </navigation>
