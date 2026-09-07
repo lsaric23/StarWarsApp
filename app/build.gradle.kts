@@ -41,7 +41,6 @@ android {
     }
 }
 
-
 configurations.all {
     resolutionStrategy {
         force("androidx.core:core:1.15.0")
@@ -59,6 +58,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 
     // AppCompat & Core
     implementation("androidx.appcompat:appcompat:1.7.0")
@@ -81,6 +81,4 @@ dependencies {
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
-
-    testImplementation("junit:junit:4.13.2")
 }
