@@ -29,7 +29,6 @@ class CreatureAdapter(
         val creature = creatureList[position]
 
         holder.binding.tvCreatureName.text = creature.name
-        holder.binding.tvCreatureSpecies.text = "Vrsta: ${creature.species ?: "Nepoznato"}"
 
         Glide.with(holder.itemView.context)
             .load(creature.image)

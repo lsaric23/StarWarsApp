@@ -23,8 +23,8 @@
         tools:layout="@layout/fragment_creature_detail">
 
         <argument
-            android:name="creature"
-            app:argType="org.unizd.rma.saric.model.Creature" />
+            android:name="creatureId"
+            app:argType="string" />
     </fragment>
 
 </navigation>

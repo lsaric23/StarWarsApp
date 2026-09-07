@@ -41,9 +41,10 @@ class CreaturesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = CreatureAdapter { creature ->
-            creature._id?.let { preferencesManager.saveLastSelectedCreatureId(it) }
+            preferencesManager.saveLastSelectedCreatureId(creature.id)
+
             val action = CreaturesFragmentDirections
-                .actionCreaturesFragmentToCreatureDetailFragment(creature)
+                .actionCreaturesFragmentToCreatureDetailFragment(creature.id)
             findNavController().navigate(action)
         }
 
@@ -61,15 +62,17 @@ class CreaturesFragment : Fragment() {
                 binding.progressBar.visibility = View.GONE
 
                 if (response.isSuccessful && response.body() != null) {
-                    val list = response.body()!!
+                    val list = response.body()!!.data
                     adapter.updateData(list)
                 } else {
-                    binding.tvError.text = "Greška pri dohvatu podataka."
+                    // Prikazuje točan HTTP kod (npr. 404 ili 500)
+                    binding.tvError.text = "HTTP Greška: ${response.code()} ${response.message()}"
                     binding.tvError.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
                 binding.progressBar.visibility = View.GONE
-                binding.tvError.text = "Mrežna greška: ${e.localizedMessage}"
+                // Prikazuje točan naziv iznimke
+                binding.tvError.text = "Greška: ${e.javaClass.simpleName} - ${e.message}"
                 binding.tvError.visibility = View.VISIBLE
             }
         }
@@ -79,4 +82,5 @@ class CreaturesFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }
