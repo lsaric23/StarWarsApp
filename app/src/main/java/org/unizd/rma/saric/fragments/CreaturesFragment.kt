@@ -65,15 +65,17 @@ class CreaturesFragment : Fragment() {
                     val list = response.body()!!.data
                     adapter.updateData(list)
                 } else {
-                    // Prikazuje točan HTTP kod (npr. 404 ili 500)
-                    binding.tvError.text = "HTTP Greška: ${response.code()} ${response.message()}"
+                    binding.tvError.text = "HTTP Greška: ${response.code()}"
                     binding.tvError.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
                 binding.progressBar.visibility = View.GONE
-                // Prikazuje točan naziv iznimke
-                binding.tvError.text = "Greška: ${e.javaClass.simpleName} - ${e.message}"
+                binding.tvError.text = "Poslužitelj se spaja, kliknite za ponovni pokušaj.\n(${e.localizedMessage})"
                 binding.tvError.visibility = View.VISIBLE
+
+                binding.tvError.setOnClickListener {
+                    fetchCreatures()
+                }
             }
         }
     }
@@ -82,5 +84,7 @@ class CreaturesFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
 
 }
